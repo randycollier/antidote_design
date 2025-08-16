@@ -1,26 +1,90 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root{
+  --bg: #0f172a;           /* slate-900 */
+  --bg-2: #111827;         /* gray-900 */
+  --text: #e5e7eb;         /* gray-200 */
+  --muted: #94a3b8;        /* slate-400 */
+  --accent: #f59e0b;       /* amber-500 */
+  --ring: #22d3ee;         /* cyan-400 */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Reset-ish */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: var(--text); background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* Skip to content for a11y */
+.skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.skip-link:focus { left: 1rem; top: 1rem; width: auto; height: auto; padding: .5rem .75rem; background: #fff; color: #111; border-radius: .5rem; box-shadow: 0 5px 20px rgb(0 0 0 / .25); }
+
+/* NAV WRAPPER */
+.nav { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(140%) blur(8px); background: rgb(17 24 39 / .6); border-bottom: 1px solid rgb(148 163 184 / .15); }
+.nav__inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .75rem; padding: .75rem 1rem; }
+
+/* Brand */
+.brand { display: inline-flex; align-items: center; gap: .6rem; font-weight: 700; letter-spacing: .02em; }
+.brand__logo { width: 28px; height: 28px; border-radius: .4rem; background: conic-gradient(from 210deg, var(--accent), #ef4444, #8b5cf6, #22d3ee, var(--accent)); box-shadow: inset 0 0 0 2px rgb(255 255 255 / .12); }
+.brand__text { font-size: 1.05rem; }
+
+/* Hamburger (checkbox hack, no JS) */
+#menu-toggle { position: absolute; opacity: 0; pointer-events: none; }
+.hamburger { display: none; cursor: pointer; width: 40px; height: 40px; border-radius: .6rem; border: 1px solid rgb(148 163 184 / .25); place-items: center; }
+.hamburger:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.hamburger span { display: block; width: 20px; height: 2px; background: var(--text); position: relative; transition: transform .25s ease, background .2s ease; }
+.hamburger span::before, .hamburger span::after { content: ""; position: absolute; left: 0; width: 20px; height: 2px; background: var(--text); transition: transform .25s ease, opacity .2s ease; }
+.hamburger span::before { top: -6px; }
+.hamburger span::after { top: 6px; }
+
+/* Primary nav links */
+.nav__links { display: flex; gap: .5rem; align-items: center; justify-content: center; }
+.nav__links a { padding: .45rem .7rem; border-radius: .5rem; color: var(--muted); font-weight: 500; }
+.nav__links a:hover, .nav__links a:focus-visible { color: var(--text); background: rgb(148 163 184 / .12); outline: none; }
+
+/* CTA button */
+.btn { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid rgb(148 163 184 / .25); border-radius: .7rem; padding: .55rem .9rem; font-weight: 600; }
+.btn--accent { background: linear-gradient(135deg, var(--accent), #fb923c); color: #111; border-color: transparent; }
+.btn--accent:hover { filter: brightness(1.05); }
+
+/* Mobile menu panel */
+.menu { grid-column: 1 / -1; display: none; }
+.menu__panel { display: grid; gap: .25rem; padding: .5rem; }
+.menu__panel a { padding: .75rem .75rem; border-radius: .6rem; color: var(--text); background: rgb(148 163 184 / .1); border: 1px solid rgb(148 163 184 / .12); }
+.menu__panel a:hover, .menu__panel a:focus-visible { background: rgb(148 163 184 / .16); outline: none; }
+
+/* Toggle states */
+#menu-toggle:checked + label.hamburger span { background: transparent; }
+#menu-toggle:checked + label.hamburger span::before { transform: translateY(6px) rotate(45deg); }
+#menu-toggle:checked + label.hamburger span::after { transform: translateY(-6px) rotate(-45deg); }
+#menu-toggle:checked ~ .menu { display: block; animation: fade .2s ease; }
+
+@keyframes fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nav__links { display: none; }
+  .hamburger { display: grid; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Desktop behavior */
+@media (min-width: 901px) {
+  /* Right-align primary links on desktop */
+  .nav__links { margin-left: auto; justify-content: flex-end; }
+  /* Always hide the mobile menu on desktop, even if the checkbox is toggled */
+  #menu-toggle:checked ~ .menu { display: none; }
+  /* Hide hamburger on desktop */
+  .hamburger { display: none; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  .hamburger span, .hamburger span::before, .hamburger span::after { transition: none; }
+  .menu { animation: none !important; }
 }
+
+/* Demo page content */
+main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+.hero { display: grid; gap: 1rem; }
+.hero h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: .01em; }
+.card-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.card { grid-column: span 6; padding: 1rem; border-radius: 1rem; background: rgb(148 163 184 / .06); border: 1px solid rgb(148 163 184 / .15); }
+@media (max-width: 760px) { .card { grid-column: span 12; } }
